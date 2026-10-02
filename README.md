@@ -1,0 +1,88 @@
+# @protegey/react-native-sdk
+
+Official Protegey SDK for React Native — everything [`@protegey/sdk`](https://github.com/protegey/protegey_js_sdk)
+offers (device intelligence, transaction reporting, behavioral biometrics), plus an in-app KYC flow
+so your users never leave your app to verify their identity.
+
+## Install
+
+Not yet published to npm — install directly from GitHub for now (also installs its own dependency,
+`react-native-webview`, as a peer — add it to your own app if you don't already have it):
+
+```bash
+npm install git+https://github.com/protegey/protegey_react_native_sdk.git react-native-webview
+```
+
+## Usage
+
+```tsx
+import { Protegey, ProtegeyKycProvider, useProtegeyKyc } from '@protegey/react-native-sdk';
+
+const protegey = new Protegey({ apiKey: 'YOUR_API_KEY', baseUrl: 'https://api.protegey.com' });
+
+// Wrap your app once, near the root.
+export default function App() {
+  return (
+    <ProtegeyKycProvider>
+      <Home />
+    </ProtegeyKycProvider>
+  );
+}
+
+function Home() {
+  const { present } = useProtegeyKyc();
+
+  // Device intelligence — call on login / session start.
+  const { visitorId } = await protegey.device.identify({ externalCustomerId: 'cust-9981' });
+
+  // Transactions
+  await protegey.transactions.report({
+    externalTransactionId: 'tx-00234',
+    externalCustomerId: 'cust-9981',
+    direction: 'DEBIT',
+    amount: 250000,
+    currency: 'XOF',
+    transactionType: 'cashout',
+    isCash: true,
+    visitorId,
+  });
+
+  // Identity verification — one call starts the session AND shows it in a draggable bottom sheet
+  // (drag handle + Close button). The user never leaves your app, and there's no UI code to write
+  // for that on your end.
+  const status = await present(protegey.kyc, { externalUserId: 'cust-9981' });
+  // status?.status === 'Approved' | 'Declined' | ... — or undefined if closed before one arrived.
+
+  // Behavioral biometrics — aggregated keystroke/touch/navigation metadata only, never raw content
+  const behavioral = await protegey.behavioral.report({
+    externalCustomerId: 'cust-9981',
+    sessionId: 'sess-20260115-01',
+    keystroke: { avgInterKeyLatencyMs: 145, typingSpeedCharsPerSec: 4.2, errorRate: 0.02 },
+  });
+  // behavioral.status === 'learning' for a customer's first 5 sessions — expected, not an error.
+}
+```
+
+Prefer `ProtegeyKycView` directly only if you need a different presentation than the provided
+bottom sheet, or want to drive the polling UI yourself — see its doc comment in `src/KycWebView.tsx`.
+
+## `baseUrl` — no default, on purpose
+
+This package ships inside apps that can't be force-updated the moment Protegey's own API domain
+changes. Baking in a guess would risk every already-shipped app silently talking to a stale host
+later — so `baseUrl` is required, with no fallback. Confirm the current value with Protegey before
+you ship.
+
+## Development
+
+```bash
+npm install
+npm run typecheck
+npm test
+npm run build
+```
+
+## Security note
+
+Your API key is used directly from your app — the same key your backend would otherwise use
+server-side. Keep it out of source control the same way you would any other secret.
