@@ -1,0 +1,58 @@
+{
+  "name": "@protegey/react-native-sdk",
+  "version": "0.1.0",
+  "description": "Official Protegey SDK for React Native — everything @protegey/sdk offers, plus an in-app KYC webview so your users never leave your app.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.cjs.json && node scripts/rename-cjs.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@protegey/sdk": "git+https://github.com/protegey/protegey_js_sdk.git"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-native": ">=0.70.0",
+    "react-native-webview": ">=13.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "react": "^18.2.0",
+    "react-native": "^0.76.0",
+    "react-native-webview": "^13.12.0",
+    "react-test-renderer": "^18.2.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "keywords": [
+    "protegey",
+    "fraud",
+    "react-native",
+    "kyc",
+    "device-intelligence"
+  ],
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/protegey/protegey_react_native_sdk"
+  }
+}
