@@ -6,11 +6,14 @@ so your users never leave your app to verify their identity.
 
 ## Install
 
-Not yet published to npm — install directly from GitHub for now (also installs its own dependency,
-`react-native-webview`, as a peer — add it to your own app if you don't already have it):
+Not yet published to npm — install directly from GitHub for now (also install its peer
+dependencies if you don't already have them: `react-native-webview` for the in-app KYC sheet,
+`react-native-device-info` and `@react-native-async-storage/async-storage` for `device.identify()`
+to report real device attributes and a visitorId that's stable across app launches):
 
 ```bash
-npm install git+https://github.com/protegey/protegey_react_native_sdk.git react-native-webview
+npm install git+https://github.com/protegey/protegey_react_native_sdk.git \
+  react-native-webview react-native-device-info @react-native-async-storage/async-storage
 ```
 
 ## Usage
