@@ -1,3 +1,16 @@
+## 0.1.1
+
+- Fix: `device.identify()` now works correctly out of the box. The base `@protegey/sdk`'s
+  fingerprinting is browser-only (canvas/WebGL) — with no DOM in React Native, used directly it
+  silently fell back to a fresh random `visitorId` with **empty device attributes** on every call,
+  so device signals never correlated and transactions showed no enriched device data. `Protegey`
+  now wraps `.device` with an RN-native implementation: a visitorId persisted across app launches
+  via `@react-native-async-storage/async-storage`, and real attributes (model, manufacturer, OS
+  version, battery, emulator detection, ...) collected via `react-native-device-info`.
+- New peer dependencies: `react-native-device-info`, `@react-native-async-storage/async-storage`.
+- `transactions`/`kyc`/`behavioral` are unchanged — their HTTP calls already worked fine in React
+  Native.
+
 ## 0.1.0
 
 - Initial release.
