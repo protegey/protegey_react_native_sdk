@@ -62,7 +62,7 @@ export function ProtegeyKycProvider({ children }: { children: ReactNode }) {
       <Modal visible={session !== null} animationType="slide" transparent onRequestClose={() => close()}>
         {session && (
           <View style={styles.backdrop}>
-            <SafeAreaView style={[styles.sheet, { height: windowHeight * 0.8 }]}>
+            <SafeAreaView style={[styles.sheet, { height: windowHeight * 0.95 }]}>
               <View style={styles.dragHandle} />
               <View style={styles.header}>
                 <TouchableOpacity onPress={() => close()}>
