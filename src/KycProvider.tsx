@@ -17,6 +17,14 @@ interface KycContextValue {
 
 const KycContext = createContext<KycContextValue | null>(null);
 
+/** Statuses where verification has genuinely concluded (one way or another) — every other known
+ * status ('Not Started', 'In Progress', 'Awaiting User', 'In Review', 'Resubmitted') means the
+ * user may still be actively completing the flow inside the webview, so the sheet must stay open.
+ * 'In Progress' in particular is the status every fresh session starts in, so treating it as
+ * terminal (the previous check did, by only excluding 'pending'/'Not Started') closed the sheet
+ * within the first poll tick. */
+const TERMINAL_KYC_STATUSES = new Set(['Approved', 'Declined', 'Abandoned', 'Expired', 'Kyc Expired']);
+
 interface ActiveSession {
   kyc: Protegey['kyc'];
   sessionId: string;
@@ -66,7 +74,7 @@ export function ProtegeyKycProvider({ children }: { children: ReactNode }) {
               sessionId={session.sessionId}
               url={session.url}
               onStatusChange={(status) => {
-                if (status.status !== 'pending' && status.status !== 'Not Started') {
+                if (TERMINAL_KYC_STATUSES.has(status.status)) {
                   close(status); // done — closes the sheet on its own
                 }
               }}
