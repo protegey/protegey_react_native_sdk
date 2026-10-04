@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
-import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import type { Protegey, KycSessionStatus } from '@protegey/sdk';
 import { ProtegeyKycView } from './KycWebView.js';
 
@@ -37,6 +37,7 @@ interface ActiveSession {
  * libraries use. Everything under it can call `useProtegeyKyc()`. */
 export function ProtegeyKycProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<ActiveSession | null>(null);
+  const { height: windowHeight } = useWindowDimensions();
 
   const present = useCallback((kyc: Protegey['kyc'], { externalUserId }: PresentOptions) => {
     return new Promise<KycSessionStatus | undefined>((resolve, reject) => {
@@ -55,31 +56,33 @@ export function ProtegeyKycProvider({ children }: { children: ReactNode }) {
   return (
     <KycContext.Provider value={{ present }}>
       {children}
-      {/* presentationStyle="pageSheet" gives native swipe-to-dismiss + the system drag grabber on
-          iOS; Android ignores it and falls back to a full-screen slide — the manual drag handle
-          below keeps the visual affordance consistent on both. */}
-      <Modal visible={session !== null} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => close()}>
+      {/* transparent + a bottom-anchored, height-capped sheet gives the same ~80%-of-screen
+          bottom sheet on both platforms — presentationStyle="pageSheet" alone doesn't cap height
+          at all on Android (full-screen slide) and isn't a reliable cap on iOS either. */}
+      <Modal visible={session !== null} animationType="slide" transparent onRequestClose={() => close()}>
         {session && (
-          <SafeAreaView style={styles.flex}>
-            <View style={styles.dragHandle} />
-            <View style={styles.header}>
-              <TouchableOpacity onPress={() => close()}>
-                <Text style={styles.close}>Close</Text>
-              </TouchableOpacity>
-              <Text style={styles.title}>Verifying your identity…</Text>
-              <View style={styles.spacer} />
-            </View>
-            <ProtegeyKycView
-              kyc={session.kyc}
-              sessionId={session.sessionId}
-              url={session.url}
-              onStatusChange={(status) => {
-                if (TERMINAL_KYC_STATUSES.has(status.status)) {
-                  close(status); // done — closes the sheet on its own
-                }
-              }}
-            />
-          </SafeAreaView>
+          <View style={styles.backdrop}>
+            <SafeAreaView style={[styles.sheet, { height: windowHeight * 0.8 }]}>
+              <View style={styles.dragHandle} />
+              <View style={styles.header}>
+                <TouchableOpacity onPress={() => close()}>
+                  <Text style={styles.close}>Close</Text>
+                </TouchableOpacity>
+                <Text style={styles.title}>Verifying your identity…</Text>
+                <View style={styles.spacer} />
+              </View>
+              <ProtegeyKycView
+                kyc={session.kyc}
+                sessionId={session.sessionId}
+                url={session.url}
+                onStatusChange={(status) => {
+                  if (TERMINAL_KYC_STATUSES.has(status.status)) {
+                    close(status); // done — closes the sheet on its own
+                  }
+                }}
+              />
+            </SafeAreaView>
+          </View>
         )}
       </Modal>
     </KycContext.Provider>
@@ -95,7 +98,8 @@ export function useProtegeyKyc(): KycContextValue {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
+  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: '#00000066' },
+  sheet: { backgroundColor: '#ffffff', borderTopLeftRadius: 16, borderTopRightRadius: 16, overflow: 'hidden' },
   dragHandle: { width: 36, height: 4, borderRadius: 2, backgroundColor: '#00000040', alignSelf: 'center', marginTop: 8 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12 },
   close: { color: '#007AFF' },
