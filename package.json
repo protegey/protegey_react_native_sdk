@@ -1,6 +1,6 @@
 {
   "name": "@protegey/react-native-sdk",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Official Protegey SDK for React Native \u2014 everything @protegey/sdk offers, plus an in-app KYC webview so your users never leave your app.",
   "type": "module",
   "main": "./dist/index.cjs",
