@@ -1,8 +1,7 @@
 # @protegey/react-native-sdk
 
-Official Protegey SDK for React Native — everything [`@protegey/sdk`](https://github.com/protegey/protegey_js_sdk)
-offers (device intelligence, transaction reporting, behavioral biometrics), plus an in-app KYC flow
-so your users never leave your app to verify their identity.
+Official Protegey SDK for React Native — device intelligence and behavioral biometrics, plus an
+in-app KYC flow so your users never leave your app to verify their identity.
 
 ## Install
 
@@ -36,19 +35,7 @@ function Home() {
   const { present } = useProtegeyKyc();
 
   // Device intelligence — call on login / session start.
-  const { visitorId } = await protegey.device.identify({ externalCustomerId: 'cust-9981' });
-
-  // Transactions
-  await protegey.transactions.report({
-    externalTransactionId: 'tx-00234',
-    externalCustomerId: 'cust-9981',
-    direction: 'DEBIT',
-    amount: 250000,
-    currency: 'XOF',
-    transactionType: 'cashout',
-    isCash: true,
-    visitorId,
-  });
+  await protegey.device.identify({ externalCustomerId: 'cust-9981' });
 
   // Identity verification — one call starts the session AND shows it in a draggable bottom sheet
   // (drag handle + Close button). The user never leaves your app, and there's no UI code to write
@@ -68,6 +55,19 @@ function Home() {
 
 Prefer `ProtegeyKycView` directly only if you need a different presentation than the provided
 bottom sheet, or want to drive the polling UI yourself — see its doc comment in `src/KycWebView.tsx`.
+
+## Transactions — report these from your backend, not from this app
+
+`POST /partner-api/transactions` is meant to be called server-to-server, from your own backend,
+not from this SDK — it carries the full-privilege API key, and your backend already has the
+authoritative transaction data (amount, currency, parties) since it's the one processing it.
+Calling `device.identify()` above is this app's actual job: as long as your backend sends the
+same `externalCustomerId` when it reports the transaction a few minutes later, Protegey picks up
+this device/session signal automatically — nothing to relay yourself. `protegey.transactions`
+still exists on the underlying `@protegey/sdk` client for a quick local/sandbox test, but shipping
+a real app through it means embedding your secret key in the app bundle, which this package does
+nothing to restrict (see Security below) — report transactions from `@protegey/sdk` on your
+Node backend, or the PHP/Java SDKs, instead.
 
 ## `baseUrl` — no default, on purpose
 

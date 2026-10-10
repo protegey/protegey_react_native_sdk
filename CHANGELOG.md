@@ -1,3 +1,10 @@
+## 0.1.2
+
+- Docs: clarified that `transactions.report()` isn't the recommended way to report a transaction
+  from a shipped app — that call belongs server-to-server, from your own backend, now that
+  Protegey auto-links a `device.identify()` signal to a later transaction by `externalCustomerId`
+  alone (no `visitorId` relay needed). No code change; `protegey.transactions` still works.
+
 ## 0.1.1
 
 - Fix: `device.identify()` now works correctly out of the box. The base `@protegey/sdk`'s
