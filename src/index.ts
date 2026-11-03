@@ -33,6 +33,7 @@ export type {
   StartKycSessionInput,
   StartKycSessionResult,
   KycSessionStatus,
+  KycOutcome,
   KeystrokeMetrics,
   TouchMetrics,
   NavigationMetrics,
