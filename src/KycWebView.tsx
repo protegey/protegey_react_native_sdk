@@ -40,5 +40,17 @@ export function ProtegeyKycView({ kyc, sessionId, url, onStatusChange, pollInter
     return () => clearInterval(timer);
   }, [kyc, sessionId, onStatusChange, pollIntervalMs]);
 
-  return <WebView source={{ uri: url }} style={{ flex: 1 }} />;
+  return (
+    <WebView
+      source={{ uri: url }}
+      style={{ flex: 1 }}
+      // Android-specific: a WebView nested inside another touch-sensitive container (this app's
+      // own Modal/sheet) can otherwise have its internal scroll swallowed by the parent instead of
+      // scrolling its own content — content taller than the sheet (e.g. the result screen's
+      // Scores/Risk factors sections) then becomes unreachable. iOS scrolls correctly without
+      // these; they're no-ops there.
+      nestedScrollEnabled
+      overScrollMode="always"
+    />
+  );
 }
