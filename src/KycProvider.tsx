@@ -18,12 +18,15 @@ interface KycContextValue {
 const KycContext = createContext<KycContextValue | null>(null);
 
 /** Statuses where verification has genuinely concluded (one way or another) — every other known
- * status ('Not Started', 'In Progress', 'Awaiting User', 'In Review', 'Resubmitted') means the
- * user may still be actively completing the flow inside the webview, so the sheet must stay open.
- * 'In Progress' in particular is the status every fresh session starts in, so treating it as
- * terminal (the previous check did, by only excluding 'pending'/'Not Started') closed the sheet
- * within the first poll tick. */
-const TERMINAL_KYC_STATUSES = new Set(['Approved', 'Declined', 'Abandoned', 'Expired', 'Kyc Expired']);
+ * status ('Not Started', 'In Progress', 'Awaiting User', 'Resubmitted') means the user may still
+ * be actively completing the flow inside the webview, so the sheet must stay open. 'In Progress'
+ * in particular is the status every fresh session starts in, so treating it as terminal (the
+ * previous check did, by only excluding 'pending'/'Not Started') closed the sheet within the
+ * first poll tick. 'In Review' IS terminal here — it's what a concluded FaceTec session reports
+ * when the match confidence is below the auto-approve threshold (decision.outcome === 'MANUAL');
+ * FaceTec is done, a human just needs to review it later — the sheet shouldn't stay open waiting
+ * for that. */
+const TERMINAL_KYC_STATUSES = new Set(['Approved', 'Declined', 'In Review', 'Abandoned', 'Expired', 'Kyc Expired']);
 
 interface ActiveSession {
   kyc: Protegey['kyc'];
