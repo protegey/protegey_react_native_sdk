@@ -23,7 +23,7 @@ describe('ProtegeyKycView', () => {
     const kyc = buildKyc([
       { sessionId: 's1', externalUserId: 'cust-1', status: 'pending', decision: null },
       { sessionId: 's1', externalUserId: 'cust-1', status: 'pending', decision: null },
-      { sessionId: 's1', externalUserId: 'cust-1', status: 'Approved', decision: { outcome: 'pass' } },
+      { sessionId: 's1', externalUserId: 'cust-1', status: 'APPROVED', decision: { outcome: 'pass' } },
     ]);
     const onStatusChange = vi.fn();
 
@@ -46,7 +46,7 @@ describe('ProtegeyKycView', () => {
     expect(kyc.getSession).toHaveBeenCalledTimes(3);
     expect(onStatusChange).toHaveBeenCalledTimes(2);
     expect(onStatusChange).toHaveBeenNthCalledWith(1, expect.objectContaining({ status: 'pending' }));
-    expect(onStatusChange).toHaveBeenNthCalledWith(2, expect.objectContaining({ status: 'Approved' }));
+    expect(onStatusChange).toHaveBeenNthCalledWith(2, expect.objectContaining({ status: 'APPROVED' }));
   });
 
   it('stops polling once unmounted', async () => {

@@ -18,15 +18,18 @@ interface KycContextValue {
 const KycContext = createContext<KycContextValue | null>(null);
 
 /** Statuses where verification has genuinely concluded (one way or another) — every other known
- * status ('Not Started', 'In Progress', 'Awaiting User', 'Resubmitted') means the user may still
- * be actively completing the flow inside the webview, so the sheet must stay open. 'In Progress'
+ * status ('NOT_STARTED', 'IN_PROGRESS', 'AWAITING_USER', 'RESUBMITTED') means the user may still
+ * be actively completing the flow inside the webview, so the sheet must stay open. 'IN_PROGRESS'
  * in particular is the status every fresh session starts in, so treating it as terminal (the
- * previous check did, by only excluding 'pending'/'Not Started') closed the sheet within the
- * first poll tick. 'In Review' IS terminal here — it's what a concluded FaceTec session reports
+ * previous check did, by only excluding 'pending'/'NOT_STARTED') closed the sheet within the
+ * first poll tick. 'IN_REVIEW' IS terminal here — it's what a concluded FaceTec session reports
  * when the match confidence is below the auto-approve threshold (decision.outcome === 'MANUAL');
  * FaceTec is done, a human just needs to review it later — the sheet shouldn't stay open waiting
- * for that. */
-const TERMINAL_KYC_STATUSES = new Set(['Approved', 'Declined', 'In Review', 'Abandoned', 'Expired', 'Kyc Expired']);
+ * for that.
+ *
+ * Uppercase since the partner-api backend moved every status/decision field to UPPER_SNAKE_CASE
+ * (2026-11-14) — these must match the wire value exactly. */
+const TERMINAL_KYC_STATUSES = new Set(['APPROVED', 'DECLINED', 'IN_REVIEW', 'ABANDONED', 'EXPIRED', 'KYC_EXPIRED']);
 
 interface ActiveSession {
   kyc: Protegey['kyc'];
