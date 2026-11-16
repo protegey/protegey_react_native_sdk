@@ -14,12 +14,13 @@ export interface ProtegeyKycViewProps {
 }
 
 /**
- * Shows the provider-hosted KYC flow inside the host app — the end user never leaves the partner's
- * app. provider is a third party Protegey doesn't control the completion redirect of, so this doesn't
- * watch navigation: it polls `kyc.getSession()` in the background (the same best-effort polling
- * fallback `@protegey/sdk` already documents) and reports every status change via
- * `onStatusChange`. The host app decides what counts as "done" and closes/pops this view itself —
- * it's a bare `<WebView>` with no header of its own, so you control your own chrome.
+ * Shows Protegey's own biometric-hosted KYC capture flow inside the host app — the end user never
+ * leaves the partner's app. The capture happens in Protegey's own `capture-web` app, not a
+ * third-party redirect, but this still doesn't watch navigation for completion: it polls
+ * `kyc.getSession()` in the background (the same best-effort polling fallback `@protegey/sdk`
+ * already documents) and reports every status change via `onStatusChange`. The host app decides
+ * what counts as "done" and closes/pops this view itself — it's a bare `<WebView>` with no header
+ * of its own, so you control your own chrome.
  */
 export function ProtegeyKycView({ kyc, sessionId, url, onStatusChange, pollIntervalMs = 3000 }: ProtegeyKycViewProps) {
   const lastStatusRef = useRef<string | null>(null);
