@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
-import { getBatteryLevel, getManufacturer, getModel, getSystemVersion, getTotalMemory, getVersion, isBatteryCharging, isEmulator } from 'react-native-device-info';
+import { getBatteryLevel, getFreeDiskStorage, getManufacturer, getModel, getSystemVersion, getTotalDiskCapacity, getTotalMemory, getVersion, isBatteryCharging, isEmulator } from 'react-native-device-info';
 import type { Protegey as BaseProtegey, DeviceAttributes, IdentifyInput, IdentifyResult } from '@protegey/sdk';
 
 type BaseDeviceModule = InstanceType<typeof BaseProtegey>['device'];
@@ -38,16 +38,18 @@ async function getOrCreateVisitorId(): Promise<string> {
 }
 
 /**
- * manufacturer/batteryLevel/isCharging aren't in @protegey/sdk's own DeviceAttributes type yet,
- * but the backend's DeviceAttributesDto already accepts them (same fields protegey_flutter_sdk
- * already sends) — widened locally rather than blocked on that package catching up.
+ * manufacturer/totalStorageMb/freeStorageMb/batteryLevel/isCharging are all typed fields on
+ * @protegey/sdk's DeviceAttributes as of v0.6.0 — no cast needed. `isVpnActive` is also a typed
+ * field, but react-native-device-info has no VPN-detection API, so it's left uncollected here.
  */
-async function collectNativeAttributes(): Promise<DeviceAttributes & Record<string, unknown>> {
+async function collectNativeAttributes(): Promise<DeviceAttributes> {
   try {
-    const [emulator, totalMemoryBytes, manufacturer, batteryLevel, charging] = await Promise.all([
+    const [emulator, totalMemoryBytes, manufacturer, totalDiskBytes, freeDiskBytes, batteryLevel, charging] = await Promise.all([
       isEmulator().catch(() => undefined),
       getTotalMemory().catch(() => undefined),
       getManufacturer().catch(() => undefined),
+      getTotalDiskCapacity().catch(() => undefined),
+      getFreeDiskStorage().catch(() => undefined),
       getBatteryLevel().catch(() => undefined),
       isBatteryCharging().catch(() => undefined),
     ]);
@@ -59,6 +61,8 @@ async function collectNativeAttributes(): Promise<DeviceAttributes & Record<stri
       appVersion: getVersion(),
       isEmulator: emulator,
       totalMemoryMb: typeof totalMemoryBytes === 'number' ? Math.round(totalMemoryBytes / (1024 * 1024)) : undefined,
+      totalStorageMb: typeof totalDiskBytes === 'number' ? Math.round(totalDiskBytes / (1024 * 1024)) : undefined,
+      freeStorageMb: typeof freeDiskBytes === 'number' ? Math.round(freeDiskBytes / (1024 * 1024)) : undefined,
       batteryLevel: typeof batteryLevel === 'number' && batteryLevel >= 0 ? Math.round(batteryLevel * 100) : undefined,
       isCharging: charging,
     };

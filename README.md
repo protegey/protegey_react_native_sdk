@@ -41,7 +41,7 @@ function Home() {
   // (drag handle + Close button). The user never leaves your app, and there's no UI code to write
   // for that on your end.
   const status = await present(protegey.kyc, { externalUserId: 'cust-9981' });
-  // status?.status === 'Approved' | 'Declined' | ... — or undefined if closed before one arrived.
+  // status?.status === 'APPROVED' | 'DECLINED' | ... — or undefined if closed before one arrived.
 
   // Behavioral biometrics — aggregated keystroke/touch/navigation metadata only, never raw content
   const behavioral = await protegey.behavioral.report({
@@ -49,7 +49,7 @@ function Home() {
     sessionId: 'sess-20260115-01',
     keystroke: { avgInterKeyLatencyMs: 145, typingSpeedCharsPerSec: 4.2, errorRate: 0.02 },
   });
-  // behavioral.status === 'learning' for a customer's first 5 sessions — expected, not an error.
+  // behavioral.status === 'LEARNING' for a customer's first 5 sessions — expected, not an error.
 }
 ```
 

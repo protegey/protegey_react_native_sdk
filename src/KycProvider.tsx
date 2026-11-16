@@ -6,6 +6,10 @@ import { ProtegeyKycView } from './KycWebView.js';
 
 interface PresentOptions {
   externalUserId: string;
+  /** Optional — feeds Protegey's cross-partner identity-resolution matching alongside `externalUserId`. */
+  email?: string;
+  /** Optional — same purpose as `email`, for cross-partner identity-resolution matching. */
+  phone?: string;
 }
 
 interface KycContextValue {
@@ -45,10 +49,10 @@ export function ProtegeyKycProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<ActiveSession | null>(null);
   const { height: windowHeight } = useWindowDimensions();
 
-  const present = useCallback((kyc: Protegey['kyc'], { externalUserId }: PresentOptions) => {
+  const present = useCallback((kyc: Protegey['kyc'], { externalUserId, email, phone }: PresentOptions) => {
     return new Promise<KycSessionStatus | undefined>((resolve, reject) => {
       kyc
-        .startSession({ externalUserId })
+        .startSession({ externalUserId, email, phone })
         .then(({ sessionId, url }) => setSession({ kyc, sessionId, url, resolve }))
         .catch(reject);
     });
