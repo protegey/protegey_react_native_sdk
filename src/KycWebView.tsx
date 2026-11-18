@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { WebView } from 'react-native-webview';
-import type { Protegey, KycSessionStatus } from '@protegey/sdk';
+import type { KycModule, KycSessionStatus } from './types.js';
 
 export interface ProtegeyKycViewProps {
   /** Pass `protegey.kyc` from your own `Protegey` instance. */
-  kyc: Protegey['kyc'];
+  kyc: Pick<KycModule, 'getSession'>;
   /** From `kyc.startSession()`'s result. */
   sessionId: string;
   /** From `kyc.startSession()`'s result. */

@@ -26,15 +26,12 @@ export type {
   IdentifyInput,
   IdentifyResult,
   ReportTransactionInput,
-  ReportTransactionResult,
   TransactionDirection,
   TransactionChannel,
   CustomerSegment,
   ProtegeyOptions,
-  Alert,
   StartKycSessionInput,
   StartKycSessionResult,
-  KycSessionStatus,
   KycOutcome,
   KeystrokeMetrics,
   TouchMetrics,
@@ -44,6 +41,21 @@ export type {
   ReportBehavioralEventResult,
   BehavioralConfidenceTier,
 } from '@protegey/sdk';
+// Wire-exact replacements for @protegey/sdk's looser `Alert` / `KycSessionStatus` /
+// `ReportTransactionResult` (see ./types.ts).
+export type {
+  KycStatus,
+  KycSessionStatus,
+  KycModule,
+  TransactionsModule,
+  TransactionDecision,
+  ReportTransactionResult,
+  Alert,
+  AlertStatus,
+  AlertDisposition,
+  AlertDecisionVerdict,
+  AlertRuleSeverity,
+} from './types.js';
 export { Protegey } from './ProtegeyClient.js';
 export { RNDeviceModule } from './device.js';
 export { ProtegeyKycView } from './KycWebView.js';
