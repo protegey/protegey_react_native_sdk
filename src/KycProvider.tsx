@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
-import type { KycModule, KycSessionStatus, KycStatus } from './types.js';
+import type { KycSessionStatus, KycStatus } from '@protegey/sdk';
+import type { KycModule } from './types.js';
 import { ProtegeyKycView } from './KycWebView.js';
 
 interface PresentOptions {

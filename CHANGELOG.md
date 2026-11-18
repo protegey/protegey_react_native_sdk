@@ -1,3 +1,18 @@
+## 0.3.1
+
+- Chore: bump the `@protegey/sdk` git dependency from `ca93963` (v0.6.0) to `3acdf00` (v0.7.0),
+  which now ships the wire-exact partner-api types itself, `ProtegeyApiError.errorCode`
+  (`PARTNER_SUSPENDED` / `PARTNER_CONTRACT_REQUIRED`) and corrected webhook-retry docs.
+- Refactor: `KycStatus`, `KycSessionStatus`, `Alert`, `ReportTransactionResult`,
+  `TransactionDecision`, `AlertStatus`, `AlertDisposition` and `AlertDecisionVerdict` are now
+  re-exported from `@protegey/sdk` instead of being duplicated here. `AlertRuleSeverity` stays as an
+  alias of the base SDK's `RuleSeverity`. `KycModule` / `TransactionsModule` are now `Pick`s of the
+  base modules (still only `startSession`/`getSession` and `report`), so no casts are needed.
+- Types: `transactions.report()`'s `alerts` is now `Array<Alert | AlertWithContext>` (the
+  device-signal alert's extra fields moved to `AlertWithContext`), and `KycSessionStatus.decision`
+  is the typed `KycDecision`. Also re-exports `KycDecision`, `KycManualReview`, `AlertWithContext`,
+  `AlertTransactionSnapshot` and `RuleSeverity`.
+
 ## 0.3.0
 
 Audited against the current partner API (protegey-backend `prod`, 2026-11-18). Routes, auth
