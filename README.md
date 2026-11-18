@@ -85,7 +85,33 @@ npm test
 npm run build
 ```
 
+## What this package calls
+
+All requests go to `{baseUrl}/partner-api/...` (no `/api/v1` prefix) with an `x-api-key` header.
+
+| Method | Call | Endpoint |
+|---|---|---|
+| `device.identify()` | POST | `/partner-api/device-events` |
+| `behavioral.report()` | POST | `/partner-api/behavioral-events` |
+| `kyc.startSession()` / `useProtegeyKyc().present()` | POST | `/partner-api/kyc/sessions` |
+| `kyc.getSession()` (polled by the KYC sheet) | GET | `/partner-api/kyc/sessions/:sessionId` |
+| `transactions.report()` (server-side only, see above) | POST | `/partner-api/transactions` |
+
+Every enum value in a response is UPPER_SNAKE_CASE (`status: 'IN_REVIEW'`, `outcome: 'MANUAL'`,
+`action: 'SOFT_CHALLENGE'`, `decision: 'BLOCKED'`, alert `status: 'OPEN'`...). The exported
+`KycStatus`, `KycSessionStatus`, `Alert` and `ReportTransactionResult` types list the exact values.
+Failed calls throw `ProtegeyApiError` with the HTTP `status` and the API's `message`.
+
+The rest of the partner API (KYB applicants, alerts, sanctions screening, the shared fraud signal
+network, KYC session list/update/resend) and webhook signature verification are deliberately not
+in this package: they belong on your backend. Use `@protegey/sdk` (Node) or the PHP/Java/.NET SDKs
+there.
+
 ## Security note
 
 Your API key is used directly from your app — the same key your backend would otherwise use
-server-side. Keep it out of source control the same way you would any other secret.
+server-side. Partner API keys aren't scoped: a key extracted from an app bundle can call **every**
+partner-api endpoint (approve/reject KYB applicants, update alerts, read KYC sessions including
+their photos, report transactions...), not just the device/behavioral/KYC calls this package makes.
+Keep it out of source control, and prefer your sandbox key until Protegey offers a restricted
+client-side key.

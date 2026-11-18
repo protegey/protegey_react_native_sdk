@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
-import type { Protegey, KycSessionStatus } from '@protegey/sdk';
+import type { KycModule, KycSessionStatus, KycStatus } from './types.js';
 import { ProtegeyKycView } from './KycWebView.js';
 
 interface PresentOptions {
@@ -16,7 +16,7 @@ interface KycContextValue {
   /** Starts a session AND shows it in a draggable sheet — no UI code needed on your end. Resolves
    * with the final status once the sheet is dismissed (by completion, or by the user swiping/
    * tapping Close); resolves `undefined` if closed before a status arrived. */
-  present: (kyc: Protegey['kyc'], options: PresentOptions) => Promise<KycSessionStatus | undefined>;
+  present: (kyc: KycModule, options: PresentOptions) => Promise<KycSessionStatus | undefined>;
 }
 
 const KycContext = createContext<KycContextValue | null>(null);
@@ -33,10 +33,10 @@ const KycContext = createContext<KycContextValue | null>(null);
  *
  * Uppercase since the partner-api backend moved every status/decision field to UPPER_SNAKE_CASE
  * (2026-11-14) — these must match the wire value exactly. */
-const TERMINAL_KYC_STATUSES = new Set(['APPROVED', 'DECLINED', 'IN_REVIEW', 'ABANDONED', 'EXPIRED', 'KYC_EXPIRED']);
+const TERMINAL_KYC_STATUSES = new Set<KycStatus>(['APPROVED', 'DECLINED', 'IN_REVIEW', 'ABANDONED', 'EXPIRED', 'KYC_EXPIRED']);
 
 interface ActiveSession {
-  kyc: Protegey['kyc'];
+  kyc: KycModule;
   sessionId: string;
   url: string;
   resolve: (status?: KycSessionStatus) => void;
@@ -49,7 +49,7 @@ export function ProtegeyKycProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<ActiveSession | null>(null);
   const { height: windowHeight } = useWindowDimensions();
 
-  const present = useCallback((kyc: Protegey['kyc'], { externalUserId, email, phone }: PresentOptions) => {
+  const present = useCallback((kyc: KycModule, { externalUserId, email, phone }: PresentOptions) => {
     return new Promise<KycSessionStatus | undefined>((resolve, reject) => {
       kyc
         .startSession({ externalUserId, email, phone })

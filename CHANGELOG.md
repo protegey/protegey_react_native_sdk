@@ -1,3 +1,27 @@
+## 0.3.0
+
+Audited against the current partner API (protegey-backend `prod`, 2026-11-18). Routes, auth
+header, request bodies and the device/behavioral/KYC-start responses were already correct; the
+fixes are in the response typings:
+
+- Fix: `KycSessionStatus.status` is now the exact `KycStatus` union (`NOT_STARTED`, `IN_PROGRESS`,
+  `AWAITING_USER`, `IN_REVIEW`, `APPROVED`, `DECLINED`, `RESUBMITTED`, `ABANDONED`, `EXPIRED`,
+  `KYC_EXPIRED`) instead of `string`. `useProtegeyKyc().present()` and `ProtegeyKycView`'s
+  `onStatusChange` use it.
+- Fix: `Alert` (in `transactions.report()`'s `alerts[]`) now models the real alert object —
+  `status` (`OPEN`/`CONFIRMED`/`MORE_INFO_REQUESTED`/`DISMISSED`), `decisionVerdict`
+  (`BLOCK`/`STEP_UP`/`ESCALATE`/`ALERT`), `disposition`, `alertNumber`, `triggeredAt`,
+  `matchedValues`..., plus the context fields of a device-signal alert — instead of an open bag.
+  `ReportTransactionResult` uses it; new exported types `AlertStatus`, `AlertDisposition`,
+  `AlertDecisionVerdict`, `AlertRuleSeverity`, `TransactionDecision`, `KycModule`,
+  `TransactionsModule`.
+- Breaking (types only): `ProtegeyKycView`'s `kyc` prop and `present()`'s first argument are typed
+  as this package's `KycModule`. Pass `protegey.kyc` from this package's `Protegey`, as before.
+- Tests: wire-contract tests for every call (path, method, `x-api-key`, body); KYC view fixtures use
+  real response shapes.
+- Docs: README lists the exact endpoints called, and the security note now spells out that an
+  embedded key can call every partner-api endpoint.
+
 ## 0.2.0
 
 - Fix: bump the `@protegey/sdk` git dependency to its current `main` (v0.6.0) — this SDK's own
