@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { act, create } from 'react-test-renderer';
 import { ProtegeyKycView } from '../src/KycWebView.js';
-import type { KycSessionStatus, KycStatus } from '../src/types.js';
+import type { KycSessionStatus, KycStatus } from '@protegey/sdk';
 
 // react-native-webview needs a real native runtime — stubbed here since these tests only cover
 // the polling side-effect, not actual WebView rendering (that's react-native-webview's own
@@ -17,7 +17,7 @@ function session(status: KycStatus, outcome: KycSessionStatus['outcome'] = null)
     externalUserId: 'cust-1',
     status,
     outcome,
-    decision: outcome ? { source: 'biometric', outcome } : null,
+    decision: null,
     fullName: null,
     documentType: null,
     country: null,

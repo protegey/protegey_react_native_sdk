@@ -100,7 +100,8 @@ All requests go to `{baseUrl}/partner-api/...` (no `/api/v1` prefix) with an `x-
 Every enum value in a response is UPPER_SNAKE_CASE (`status: 'IN_REVIEW'`, `outcome: 'MANUAL'`,
 `action: 'SOFT_CHALLENGE'`, `decision: 'BLOCKED'`, alert `status: 'OPEN'`...). The exported
 `KycStatus`, `KycSessionStatus`, `Alert` and `ReportTransactionResult` types list the exact values.
-Failed calls throw `ProtegeyApiError` with the HTTP `status` and the API's `message`.
+Failed calls throw `ProtegeyApiError` with the HTTP `status`, the API's `message`, and an
+`errorCode` when the API sends one (`PARTNER_SUSPENDED` / `PARTNER_CONTRACT_REQUIRED`, both 403).
 
 The rest of the partner API (KYB applicants, alerts, sanctions screening, the shared fraud signal
 network, KYC session list/update/resend) and webhook signature verification are deliberately not
