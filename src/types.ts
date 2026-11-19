@@ -1,7 +1,7 @@
 import type { Protegey as BaseProtegey, RuleSeverity } from '@protegey/sdk';
 
 /**
- * Since `@protegey/sdk` v0.7.0 the wire-exact response types (`KycStatus`, `KycSessionStatus`,
+ * Since `@protegey/sdk` v0.7.0 (now v0.8.0) the wire-exact response types (`KycStatus`, `KycSessionStatus`,
  * `Alert`, `ReportTransactionResult`, ...) live in the base SDK and are re-exported from
  * `./index.ts` as-is. This file only keeps what's specific to this package: the narrower module
  * surfaces `Protegey` exposes here (the client-side subset of the partner API).

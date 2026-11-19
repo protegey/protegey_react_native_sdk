@@ -1,3 +1,13 @@
+## 0.4.0
+
+- Chore: bump the `@protegey/sdk` git dependency from `3acdf00` (v0.7.0) to `784e71f` (v0.8.0).
+- Types: `kyc.getSession()` now returns `recommendation` (`KycRecommendation`: `APPROVE` | `REVIEW` |
+  `REJECT` | `null`) and `images` (`KycSessionImages` — pre-signed `{ url, expiresAt }` links valid
+  1 hour, re-issued on every call). `KycManualReview.previousStatus` / `newStatus` are UPPER_SNAKE_CASE.
+  Re-exports `KycRecommendation`, `KycPresignedImage` and `KycSessionImages`.
+- Cash deposits (`/partner-api/cash-deposits`) are server-to-server: use `@protegey/sdk`'s
+  `cashDeposits` from your backend — not exposed by this package's client.
+
 ## 0.3.1
 
 - Chore: bump the `@protegey/sdk` git dependency from `ca93963` (v0.6.0) to `3acdf00` (v0.7.0),
