@@ -100,11 +100,17 @@ All requests go to `{baseUrl}/partner-api/...` (no `/api/v1` prefix) with an `x-
 Every enum value in a response is UPPER_SNAKE_CASE (`status: 'IN_REVIEW'`, `outcome: 'MANUAL'`,
 `action: 'SOFT_CHALLENGE'`, `decision: 'BLOCKED'`, alert `status: 'OPEN'`...). The exported
 `KycStatus`, `KycSessionStatus`, `Alert` and `ReportTransactionResult` types list the exact values.
+
+`kyc.getSession()` also returns `recommendation` (Protegey's own verdict: `APPROVE` / `REVIEW` /
+`REJECT` / `null`, unchanged by a manual override — `status` is the final decision) and `images`
+(`documentFront`, `documentBack`, `selfie`, `documentFaceCrop`, each `{ url, expiresAt }` or `null`).
+Those pre-signed URLs are valid for one hour and re-issued on every call: display or download them
+within the hour, then call `getSession()` again for fresh links — never persist the URL.
 Failed calls throw `ProtegeyApiError` with the HTTP `status`, the API's `message`, and an
 `errorCode` when the API sends one (`PARTNER_SUSPENDED` / `PARTNER_CONTRACT_REQUIRED`, both 403).
 
-The rest of the partner API (KYB applicants, alerts, sanctions screening, the shared fraud signal
-network, KYC session list/update/resend) and webhook signature verification are deliberately not
+The rest of the partner API (cash deposits, KYB applicants, alerts, sanctions screening, the shared
+fraud signal network, KYC session list/update/resend) and webhook signature verification are deliberately not
 in this package: they belong on your backend. Use `@protegey/sdk` (Node) or the PHP/Java/.NET SDKs
 there.
 
