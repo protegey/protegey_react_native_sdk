@@ -15,8 +15,8 @@ export interface ProtegeyKycViewProps {
 }
 
 /**
- * Shows Protegey's own biometric-hosted KYC capture flow inside the host app — the end user never
- * leaves the partner's app. The capture happens in Protegey's own `capture-web` app, not a
+ * Shows Protegey's own hosted KYC capture flow inside the host app — the end user never
+ * leaves the partner's app. The capture happens in Protegey's own identity verification app, not a
  * third-party redirect, but this still doesn't watch navigation for completion: it polls
  * `kyc.getSession()` in the background (the same best-effort polling fallback `@protegey/sdk`
  * already documents) and reports every status change via `onStatusChange`. The host app decides

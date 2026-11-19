@@ -64,7 +64,7 @@ fixes are in the response typings:
   even though `ReportTransactionInput` uses them.
 - Docs: fixed stale pre-rollout casing in the README's example comments (`'Approved'`/`'Declined'`
   → `'APPROVED'`/`'DECLINED'`, `'learning'` → `'LEARNING'`), and corrected `ProtegeyKycView`'s doc
-  comment — the hosted capture flow is Protegey's own biometric-hosted `capture-web` app, not a
+  comment — the hosted capture flow is Protegey's own hosted identity verification app, not a
   third-party ("provider") redirect.
 
 ## 0.1.2

@@ -27,9 +27,9 @@ const KycContext = createContext<KycContextValue | null>(null);
  * be actively completing the flow inside the webview, so the sheet must stay open. 'IN_PROGRESS'
  * in particular is the status every fresh session starts in, so treating it as terminal (the
  * previous check did, by only excluding 'pending'/'NOT_STARTED') closed the sheet within the
- * first poll tick. 'IN_REVIEW' IS terminal here — it's what a concluded biometric session reports
+ * first poll tick. 'IN_REVIEW' IS terminal here — it's what a concluded verification session reports
  * when the match confidence is below the auto-approve threshold (decision.outcome === 'MANUAL');
- * biometric is done, a human just needs to review it later — the sheet shouldn't stay open waiting
+ * the automated check is done, a human just needs to review it later — the sheet shouldn't stay open waiting
  * for that.
  *
  * Uppercase since the partner-api backend moved every status/decision field to UPPER_SNAKE_CASE
