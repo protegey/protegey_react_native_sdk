@@ -18,7 +18,15 @@ npm install git+https://github.com/protegey/protegey_react_native_sdk.git \
 ## Usage
 
 ```tsx
-import { Protegey, ProtegeyKycProvider, useProtegeyKyc } from '@protegey/react-native-sdk';
+import {
+  NO_3D_ENROLLMENT,
+  Protegey,
+  ProtegeyApiError,
+  ProtegeyKycProvider,
+  ProtegeyLivenessProvider,
+  useProtegeyKyc,
+  useProtegeyLiveness,
+} from '@protegey/react-native-sdk';
 
 const protegey = new Protegey({ apiKey: 'YOUR_API_KEY', baseUrl: 'https://api.protegey.com' });
 
@@ -26,13 +34,16 @@ const protegey = new Protegey({ apiKey: 'YOUR_API_KEY', baseUrl: 'https://api.pr
 export default function App() {
   return (
     <ProtegeyKycProvider>
-      <Home />
+      <ProtegeyLivenessProvider>
+        <Home />
+      </ProtegeyLivenessProvider>
     </ProtegeyKycProvider>
   );
 }
 
 function Home() {
   const { present } = useProtegeyKyc();
+  const { present: presentLiveness } = useProtegeyLiveness();
 
   // Device intelligence — call on login / session start.
   await protegey.device.identify({ externalCustomerId: 'cust-9981' });
@@ -42,6 +53,19 @@ function Home() {
   // for that on your end.
   const status = await present(protegey.kyc, { externalUserId: 'cust-9981' });
   // status?.status === 'APPROVED' | 'DECLINED' | ... — or undefined if closed before one arrived.
+
+  // 3D liveness — a separate, paid product (KYC above is unaffected). Same bottom sheet.
+  // LIVENESS: is a real, live person in front of the camera? REVERIFICATION: is it also the same
+  // person as their KYC (3D:3D match)? The end user sees a success/failure screen; the app reads
+  // the result from the resolved session (undefined if the sheet was closed first).
+  try {
+    const session = await presentLiveness(protegey.liveness, { mode: 'REVERIFICATION', externalUserId: 'cust-9981' });
+    // session?.livenessProven, session?.matched (true = same person as the KYC), session?.status
+  } catch (err) {
+    if (err instanceof ProtegeyApiError && err.errorCode === NO_3D_ENROLLMENT) {
+      // No KYC face on record for this customer — run a KYC verification first.
+    }
+  }
 
   // Behavioral biometrics — aggregated keystroke/touch/navigation metadata only, never raw content
   const behavioral = await protegey.behavioral.report({
@@ -95,6 +119,8 @@ All requests go to `{baseUrl}/partner-api/...` (no `/api/v1` prefix) with an `x-
 | `behavioral.report()` | POST | `/partner-api/behavioral-events` |
 | `kyc.startSession()` / `useProtegeyKyc().present()` | POST | `/partner-api/kyc/sessions` |
 | `kyc.getSession()` (polled by the KYC sheet) | GET | `/partner-api/kyc/sessions/:sessionId` |
+| `liveness.startSession()` / `startReverification()` / `useProtegeyLiveness().present()` | POST | `/partner-api/liveness/sessions` |
+| `liveness.getSession()` (polled by the liveness sheet) | GET | `/partner-api/liveness/sessions/:sessionId` |
 | `transactions.report()` (server-side only, see above) | POST | `/partner-api/transactions` |
 
 Every enum value in a response is UPPER_SNAKE_CASE (`status: 'IN_REVIEW'`, `outcome: 'MANUAL'`,
@@ -107,7 +133,8 @@ Every enum value in a response is UPPER_SNAKE_CASE (`status: 'IN_REVIEW'`, `outc
 Those pre-signed URLs are valid for one hour and re-issued on every call: display or download them
 within the hour, then call `getSession()` again for fresh links — never persist the URL.
 Failed calls throw `ProtegeyApiError` with the HTTP `status`, the API's `message`, and an
-`errorCode` when the API sends one (`PARTNER_SUSPENDED` / `PARTNER_CONTRACT_REQUIRED`, both 403).
+`errorCode` when the API sends one (`PARTNER_SUSPENDED` / `PARTNER_CONTRACT_REQUIRED`, both 403;
+`NO_3D_ENROLLMENT`, a 400, for a liveness reverification of someone with no KYC face on record).
 
 The rest of the partner API (cash deposits, KYB applicants, alerts, sanctions screening, the shared
 fraud signal network, KYC session list/update/resend) and webhook signature verification are deliberately not
