@@ -28,7 +28,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@protegey/sdk": "git+https://github.com/protegey/protegey_js_sdk.git#784e71f"
+    "@protegey/sdk": "git+https://github.com/protegey/protegey_js_sdk.git#main"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
