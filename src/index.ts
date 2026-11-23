@@ -19,7 +19,7 @@
  * Reach for the lower-level `ProtegeyKycView` directly only if you need a different presentation
  * than the provided bottom sheet, or want to drive the polling UI yourself.
  */
-export { ProtegeyApiError } from '@protegey/sdk';
+export { ProtegeyApiError, NO_3D_ENROLLMENT } from '@protegey/sdk';
 export type {
   DeviceAttributes,
   DeviceAction,
@@ -56,10 +56,15 @@ export type {
   AlertDisposition,
   AlertDecisionVerdict,
   RuleSeverity,
+  LivenessMode,
+  LivenessStatus,
+  LivenessSession,
+  StartLivenessSessionResult,
 } from '@protegey/sdk';
-export type { KycModule, TransactionsModule, AlertRuleSeverity } from './types.js';
+export type { KycModule, LivenessModule, TransactionsModule, AlertRuleSeverity } from './types.js';
 export { Protegey } from './ProtegeyClient.js';
 export { RNDeviceModule } from './device.js';
 export { ProtegeyKycView } from './KycWebView.js';
 export type { ProtegeyKycViewProps } from './KycWebView.js';
 export { ProtegeyKycProvider, useProtegeyKyc } from './KycProvider.js';
+export { ProtegeyLivenessProvider, useProtegeyLiveness } from './LivenessProvider.js';

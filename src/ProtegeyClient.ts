@@ -1,7 +1,7 @@
 import { Protegey as BaseProtegey } from '@protegey/sdk';
 import type { ProtegeyOptions } from '@protegey/sdk';
 import { RNDeviceModule } from './device.js';
-import type { KycModule, TransactionsModule } from './types.js';
+import type { KycModule, LivenessModule, TransactionsModule } from './types.js';
 
 /**
  * Same shape as `@protegey/sdk`'s `Protegey` — `.device`, `.transactions`, `.kyc`, `.behavioral`
@@ -20,6 +20,8 @@ export class Protegey {
   readonly device: RNDeviceModule;
   readonly transactions: TransactionsModule;
   readonly kyc: KycModule;
+  /** 3D liveness and re-verification — a separate, paid product (KYC is unaffected). */
+  readonly liveness: LivenessModule;
   readonly behavioral: BaseProtegey['behavioral'];
 
   constructor(options: ProtegeyOptions) {
@@ -27,6 +29,7 @@ export class Protegey {
     this.device = new RNDeviceModule(base.device);
     this.transactions = base.transactions;
     this.kyc = base.kyc;
+    this.liveness = base.liveness;
     this.behavioral = base.behavioral;
   }
 }

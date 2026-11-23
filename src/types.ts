@@ -12,6 +12,11 @@ import type { Protegey as BaseProtegey, RuleSeverity } from '@protegey/sdk';
  * (`GET /partner-api/kyc/sessions/:sessionId`). List/update/resend belong on your backend. */
 export type KycModule = Pick<BaseProtegey['kyc'], 'startSession' | 'getSession'>;
 
+/** `protegey.liveness` — 3D liveness (a separate, paid product; KYC is unaffected), limited to the
+ * calls an app makes: `startSession()`, `startReverification()` (rejects with `errorCode`
+ * `NO_3D_ENROLLMENT` when no 3D record (KYC) exists for that person) and `getSession()`. */
+export type LivenessModule = Pick<BaseProtegey['liveness'], 'startSession' | 'startReverification' | 'getSession'>;
+
 /** `protegey.transactions` — `report()` only (`POST /partner-api/transactions`). Server-to-server
  * in a real integration: see the README's "Transactions" section. */
 export type TransactionsModule = Pick<BaseProtegey['transactions'], 'report'>;

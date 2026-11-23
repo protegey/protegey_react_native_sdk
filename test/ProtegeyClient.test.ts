@@ -46,6 +46,17 @@ afterEach(() => vi.unstubAllGlobals());
 const protegey = new Protegey({ apiKey: 'test-key', baseUrl: 'https://api.example.test/' });
 
 describe('Protegey (React Native) — partner-api wire contract', () => {
+  it('liveness.startReverification() → POST /partner-api/liveness/sessions with mode REVERIFICATION', async () => {
+    respond(201, { sessionId: 's-1', mode: 'REVERIFICATION', status: 'PENDING', url: 'https://kyc.example/x', expiresInMinutes: 30 });
+    const result = await protegey.liveness.startReverification({ externalUserId: 'cust-1' });
+    const call = lastCall();
+
+    expect(call.url).toBe('https://api.example.test/partner-api/liveness/sessions');
+    expect(call.method).toBe('POST');
+    expect(call.body).toEqual({ mode: 'REVERIFICATION', externalUserId: 'cust-1' });
+    expect(result.sessionId).toBe('s-1');
+  });
+
   it('device.identify() → POST /partner-api/device-events with x-api-key, a stable visitorId and native attributes', async () => {
     respond(201, { recorded: true, action: 'SOFT_CHALLENGE', riskScore: 15 });
     const first = await protegey.device.identify({ externalCustomerId: 'cust-1' });
