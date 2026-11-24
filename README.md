@@ -56,7 +56,7 @@ function Home() {
 
   // 3D liveness — a separate, paid product (KYC above is unaffected). Same bottom sheet.
   // LIVENESS: is a real, live person in front of the camera? REVERIFICATION: is it also the same
-  // person as their KYC (3D:3D match)? The end user sees a success/failure screen; the app reads
+  // person as their KYC (face match)? The end user sees a success/failure screen; the app reads
   // the result from the resolved session (undefined if the sheet was closed first).
   try {
     const session = await presentLiveness(protegey.liveness, { mode: 'REVERIFICATION', externalUserId: 'cust-9981' });

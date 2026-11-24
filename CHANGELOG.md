@@ -25,7 +25,7 @@
 
 ## 0.3.0
 
-Audited against the current partner API (protegey-backend `prod`, 2026-11-18). Routes, auth
+Audited against the current partner API (production, 2026-11-18). Routes, auth
 header, request bodies and the device/behavioral/KYC-start responses were already correct; the
 fixes are in the response typings:
 
@@ -65,7 +65,7 @@ fixes are in the response typings:
 - Docs: fixed stale pre-rollout casing in the README's example comments (`'Approved'`/`'Declined'`
   → `'APPROVED'`/`'DECLINED'`, `'learning'` → `'LEARNING'`), and corrected `ProtegeyKycView`'s doc
   comment — the hosted capture flow is Protegey's own hosted identity verification app, not a
-  third-party ("provider") redirect.
+  third-party redirect.
 
 ## 0.1.2
 
