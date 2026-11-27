@@ -80,6 +80,42 @@ function Home() {
 Prefer `ProtegeyKycView` directly only if you need a different presentation than the provided
 bottom sheet, or want to drive the polling UI yourself — see its doc comment in `src/KycWebView.tsx`.
 
+## Device location
+
+In production your backend reports transactions server-to-server. The app's only location job is to
+keep Protegey up to date with the customer's last device position: a transaction of the same
+customer within ~15 minutes reuses it (GPS/IP distance, impossible travel, new area, mock location).
+
+React Native has no built-in geolocation, and this package doesn't force a native location
+dependency on you — hand it the module your app already uses:
+
+```tsx
+import * as Location from 'expo-location'; // or: import Geolocation from '@react-native-community/geolocation';
+
+const protegey = new Protegey({ apiKey: 'YOUR_API_KEY', baseUrl: 'https://api.protegey.com', geolocation: Location });
+
+// e.g. on login / app foreground — reads the position and sends it with device.identify()
+const sent = await protegey.location.update({ externalCustomerId: 'cust-9981' });
+// sent: the GpsLocationInput that was sent, or null (no module, no permission, no fix)
+
+// Only read it, without sending anything
+const position = await protegey.location.current({ timeoutMs: 3000, highAccuracy: false });
+```
+
+- `geolocation` accepts `expo-location` (`import * as Location`), `@react-native-community/geolocation`
+  or `react-native-geolocation-service`. Without it, a `navigator.geolocation` polyfill is used if
+  your app installed one; otherwise `location` simply resolves `null`.
+- **No prompt unless you ask** (`requestPermission`, default `false`): with `expo-location` the
+  foreground permission is checked first; with a navigator-style module, Android's permission is
+  checked with `PermissionsAndroid`. A permanently denied permission is never re-asked; a refusal
+  simply means no position. iOS + navigator-style module: authorization is left to the module —
+  `@react-native-community/geolocation` asks by itself unless you configure it with
+  `Geolocation.setRNConfiguration({ skipPermissionRequests: true })`; `expo-location` has no such caveat.
+- `timeoutMs` (default 1500) bounds the wait for a fresh fix, then the last known position is used if
+  there is one. `highAccuracy` defaults to `true` (GPS); `false` saves battery. `isMocked` is sent when
+  the module reports it (Android).
+- **Never throws.** No position, or a failed call, resolves to `null`.
+
 ## Transactions — report these from your backend, not from this app
 
 `POST /partner-api/transactions` is meant to be called server-to-server, from your own backend,
@@ -116,6 +152,7 @@ All requests go to `{baseUrl}/partner-api/...` (no `/api/v1` prefix) with an `x-
 | Method | Call | Endpoint |
 |---|---|---|
 | `device.identify()` | POST | `/partner-api/device-events` |
+| `location.update()` (sends the position with the device identify call) | POST | `/partner-api/device-events` |
 | `behavioral.report()` | POST | `/partner-api/behavioral-events` |
 | `kyc.startSession()` / `useProtegeyKyc().present()` | POST | `/partner-api/kyc/sessions` |
 | `kyc.getSession()` (polled by the KYC sheet) | GET | `/partner-api/kyc/sessions/:sessionId` |
@@ -132,6 +169,9 @@ Every enum value in a response is UPPER_SNAKE_CASE (`status: 'IN_REVIEW'`, `outc
 (`documentFront`, `documentBack`, `selfie`, `documentFaceCrop`, each `{ url, expiresAt }` or `null`).
 Those pre-signed URLs are valid for one hour and re-issued on every call: display or download them
 within the hour, then call `getSession()` again for fresh links — never persist the URL.
+For partner groups, `groupPresence` lists the same person's KYC at sister entities of your group
+(`[{ entity, status, createdAt, matchedOn }]`, `matchedOn` among `FACE` / `GOVERNMENT_ID` / `PHONE` /
+`EMAIL`), or `null` — information for your reviewer, not a risk flag.
 Failed calls throw `ProtegeyApiError` with the HTTP `status`, the API's `message`, and an
 `errorCode` when the API sends one (`PARTNER_SUSPENDED` / `PARTNER_CONTRACT_REQUIRED`, both 403;
 `NO_3D_ENROLLMENT`, a 400, for a liveness reverification of someone with no KYC face on record).

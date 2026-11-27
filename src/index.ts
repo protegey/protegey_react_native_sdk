@@ -60,9 +60,18 @@ export type {
   LivenessStatus,
   LivenessSession,
   StartLivenessSessionResult,
+  GpsLocationInput,
+  TransactionLocation,
+  LocationReadOptions,
+  UpdateLocationInput,
+  KycGroupPresence,
+  KycGroupMatchedOn,
 } from '@protegey/sdk';
 export type { KycModule, LivenessModule, TransactionsModule, AlertRuleSeverity } from './types.js';
 export { Protegey } from './ProtegeyClient.js';
+export type { ProtegeyRNOptions } from './ProtegeyClient.js';
+export { RNLocationModule } from './location.js';
+export type { ProtegeyGeolocation, ExpoLocationLike, NavigatorGeolocationLike } from './location.js';
 export { RNDeviceModule } from './device.js';
 export { ProtegeyKycView } from './KycWebView.js';
 export type { ProtegeyKycViewProps } from './KycWebView.js';

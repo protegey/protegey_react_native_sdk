@@ -1,3 +1,19 @@
+## 0.5.0
+
+- Feat: `protegey.location.update({ externalCustomerId, requestPermission?, timeoutMs?, highAccuracy? })`
+  reads the device position and sends it with `device.identify()` (stable visitorId + device
+  attributes), so a server-to-server transaction of the same customer within ~15 minutes reuses it.
+  Resolves to the location sent, or `null`; never throws. `protegey.location.current()` reads only.
+- No native dependency is forced: pass the module your app already uses as
+  `new Protegey({ ..., geolocation })` — `expo-location`, `@react-native-community/geolocation` or
+  `react-native-geolocation-service`; otherwise a `navigator.geolocation` polyfill is used if present,
+  else `null`. No permission prompt unless `requestPermission: true`.
+- Types: `kyc.getSession()` returns `groupPresence` (`KycGroupPresence[] | null`). Re-exports
+  `GpsLocationInput`, `TransactionLocation`, `LocationReadOptions`, `UpdateLocationInput`,
+  `KycGroupPresence`, `KycGroupMatchedOn`; exports `RNLocationModule`, `ProtegeyRNOptions`,
+  `ProtegeyGeolocation`, `ExpoLocationLike`, `NavigatorGeolocationLike`.
+- Requires `@protegey/sdk` 0.11.0 (`protegey.location` types and `location` on `device.identify()`).
+
 ## 0.4.0
 
 - Chore: bump the `@protegey/sdk` git dependency from `3acdf00` (v0.7.0) to `784e71f` (v0.8.0).
